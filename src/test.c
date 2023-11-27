@@ -1,5 +1,6 @@
 #include "test.h"
 #include "log.h"
+#include "unit-test.h"
 
 typedef struct {
     uint64_t successes;
@@ -8,6 +9,8 @@ typedef struct {
 } flo_TestTopic;
 
 #define MAX_TEST_TOPICS 1 << 6
+
+static flo_UnitTest currentTest = {0};
 
 static flo_TestTopic testTopics[MAX_TEST_TOPICS];
 static ptrdiff_t nextTestTopic = 0;
@@ -86,7 +89,15 @@ void flo_testTopicFinish() {
     nextTestTopic--;
 }
 
-void flo_printTestStart(flo_String testName) {
+void flo_setCurrentUnitTest(flo_String testName, void (*testFunction)()) {
+    if (testFunction != NULL) {
+        currentTest = (flo_UnitTest){.key = testName, .value = testFunction};
+    }
+}
+
+void flo_testStart(flo_String testName, void (*testFunction)()) {
+    flo_setCurrentUnitTest(testName, testFunction);
+
     FLO_FLUSH_AFTER(FLO_STDOUT) {
         appendSpaces();
         FLO_INFO("- ");
@@ -114,6 +125,11 @@ void flo_testFailure() {
         testTopics[i].failures++;
     }
 
+    if (currentTest.key.len != 0) {
+        flo_msi_insertFailedUnitTest(currentTest);
+        currentTest.key.len = 0;
+    }
+
     FLO_FLUSH_AFTER(FLO_STDERR) {
         flo_appendColor(FLO_COLOR_RED, FLO_STDERR);
         flo_appendToBufferMinSize(FLO_STRING("Failure"), 20,
@@ -123,8 +139,16 @@ void flo_testFailure() {
     }
 }
 
-void flo_appendTestDemarcation() {
-    FLO_ERROR((FLO_STRING(
-        "---------------------------------------------------------------"
-        "-------\n")));
+void flo_appendTestFailureStart() {
+    FLO_ERROR((FLO_STRING("----------------------------------------------------"
+                          "----------------------------\n")));
+    FLO_ERROR((FLO_STRING("|                                    REASON         "
+                          "                           |\n")));
+}
+
+void flo_appendTestFailureFinish() {
+    FLO_ERROR((FLO_STRING("|                                                   "
+                          "                           |\n")));
+    FLO_ERROR((FLO_STRING("----------------------------------------------------"
+                          "----------------------------\n")));
 }
