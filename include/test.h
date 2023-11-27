@@ -6,30 +6,47 @@ extern "C" {
 #endif
 
 #include "log.h"
+#include "macros.h"
 #include <stdbool.h>
 #include <stddef.h>
 #include <text/string.h>
 
-#define FLO_LOG_TEST_FAILED                                                    \
-    for (ptrdiff_t i = (printTestFailure(), printTestDemarcation(), 0); i < 1; \
-         i = (printTestDemarcation(), FLO_FLUSH_TO(FLO_STDERR), 1))
+#define FLO_TEST_FAILURE                                                       \
+    for (ptrdiff_t FLO_MACRO_VAR(i) =                                          \
+             (flo_testFailure(), flo_appendTestDemarcation(), 0);              \
+         FLO_MACRO_VAR(i) < 1;                                                 \
+         FLO_MACRO_VAR(i) =                                                    \
+             (flo_appendTestDemarcation(), FLO_FLUSH_TO(FLO_STDERR), 1))
 
-void printTabs();
-void printTestScore(ptrdiff_t successes, ptrdiff_t failures);
-void printTestTopicStart(flo_String testTopic);
-void printTestStart(flo_String testName);
-void printTestSuccess();
-void printTestFailure();
-void printTestDemarcation();
-void printTestResultDifferenceErrorCode(ptrdiff_t expected,
-                                        flo_String expectedString,
-                                        ptrdiff_t actual,
-                                        flo_String actualString);
-void printTestResultDifferenceString(flo_String expectedString,
-                                     flo_String actualString);
-void printTestResultDifferenceBool(bool expectedBool, bool actualBool);
-void printTestResultDifferenceNumber(ptrdiff_t expectedNumber,
-                                     ptrdiff_t actualNumber);
+#define FLO_TEST_FUNCTION(testName, ...)                                       \
+    void testName() {                                                          \
+        flo_printTestStart(FLO_STRING((#testName)));                           \
+        do {                                                                   \
+            __VA_ARGS__                                                        \
+        } while (0);                                                           \
+    }
+
+#define FLO_TEST(testString)                                                   \
+    for (ptrdiff_t FLO_MACRO_VAR(i) = (flo_printTestStart(testString), 0);     \
+         FLO_MACRO_VAR(i) < 1; FLO_MACRO_VAR(i) = 1)
+
+#define FLO_TEST_TOPIC(testTopicString)                                        \
+    for (ptrdiff_t FLO_MACRO_VAR(i) =                                          \
+             (flo_testTopicStart(testTopicString), 0);                         \
+         FLO_MACRO_VAR(i) < 1; FLO_MACRO_VAR(i) = (flo_testTopicFinish(), 1))
+
+void flo_testSuiteStart();
+int flo_testSuiteFinish();
+
+void flo_testTopicStart(flo_String testTopic);
+void flo_testTopicFinish();
+
+void flo_printTestStart(flo_String testName);
+
+void flo_testSuccess();
+
+void flo_testFailure();
+void flo_appendTestDemarcation();
 
 #ifdef __cplusplus
 }

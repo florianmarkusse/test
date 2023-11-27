@@ -17,7 +17,7 @@ target_include_directories(${EXECUTABLE_NAME} PRIVATE ${FLO_TEST_INCLUDES})
 target_include_directories(${EXECUTABLE_NAME} PRIVATE ${LIBRARY_DIR}/util/include)
 
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE ${LIBRARY_DIR}/util/build/libutil-Release.a)
-target_link_libraries(${EXECUTABLE_NAME} PRIVATE ${LIBRARY_NAME})
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE ${FLO_TEST_LIBRARY})
 
 # Compilation options
 target_compile_options(${EXECUTABLE_NAME} PRIVATE
