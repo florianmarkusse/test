@@ -1,6 +1,10 @@
-#include "unit-test.h"
+#include <dirent.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+
 #include "hash/hashes.h"
 #include "log.h"
+#include "unit-test.h"
 
 static flo_msi_UnitTest *failedUnitTests = NULL;
 static bool printedWarning = false;
@@ -23,7 +27,7 @@ bool internalInsert(flo_UnitTest failedTest, size_t hash) {
     }
 }
 
-bool flo_msi_insertFailedUnitTest(flo_UnitTest failedUnitTest) {
+bool flo_msi_insertUnitTest(flo_UnitTest failedUnitTest) {
     if (failedUnitTests == NULL) {
         if (!printedWarning) {
             FLO_FLUSH_AFTER(FLO_STDOUT) {

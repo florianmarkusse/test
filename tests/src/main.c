@@ -7,6 +7,16 @@
 
 #define CAP 1 << 21
 
+static flo_String testNames[] = {
+    FLO_STRING("aaaaaaaaa"),   FLO_STRING("bbbbbbbbb"),
+    FLO_STRING("cccccccccc"),  FLO_STRING("dddddddddd"),
+    FLO_STRING("eeeeeeeeee"),  FLO_STRING("fffffffff"),
+    FLO_STRING("ggggggggggg"), FLO_STRING("hhhhhhhhh"),
+    FLO_STRING("iiiiiiiiii"),  FLO_STRING("ffffffffffff"),
+};
+
+static ptrdiff_t numTestNames = FLO_COUNTOF(testNames);
+
 FLO_TEST_FUNCTION(test4, {
     FLO_TEST_FAILURE {
         // kdfjfkdj
@@ -17,23 +27,20 @@ FLO_TEST_FUNCTION(test4, {
 });
 
 void test1() {
-    flo_testStart(FLO_STRING("Test 1"), test1);
+    flo_unitTestStart(FLO_STRING("Test 1"), test1);
 
     flo_testSuccess();
 }
 
 void test2() {
-    flo_testStart(FLO_STRING("Test 2"), test2);
+    flo_unitTestStart(FLO_STRING("Test 2"), test2);
 
-    FLO_TEST_FAILURE {
-        // Inside this scoped block you can do your additional logging.
-        FLO_ERROR("chaos and destruction\n");
-    }
+    flo_testSuccess();
 }
 
-FLO_COMPOUND_TEST_FUNCTION(test5, {
-    for (ptrdiff_t i = 0; i < 10; i++) {
-        FLO_REPREATED_TEST(FLO_STRING("aaaa")) {
+FLO_COMPOUND_TEST_FUNCTION(multipleTests, {
+    for (ptrdiff_t i = 0; i < numTestNames; i++) {
+        FLO_PARAMETERIZED_TEST(testNames[i]) {
             if (i % 2 == 0) {
                 flo_testSuccess();
             } else {
@@ -45,10 +52,10 @@ FLO_COMPOUND_TEST_FUNCTION(test5, {
             }
         }
     }
-})
+});
 
 void test3() {
-    flo_testStart(FLO_STRING("Test 3"), test3);
+    flo_unitTestStart(FLO_STRING("Test 3"), test3);
 
     flo_testSuccess();
 }
@@ -94,23 +101,13 @@ int main() {
 
     flo_testSuiteStart();
 
-    FLO_TEST_TOPIC(FLO_STRING("First topic")) {
+    FLO_TEST_TOPIC(FLO_STRING("My first topic")) { test1(); }
+
+    FLO_TEST_TOPIC(FLO_STRING("My second topic")) {
         test2();
-        FLO_TEST_TOPIC(FLO_STRING("Inside first topic")) {
-            // run test 5.
-            test1();
-            test5();
-            test1();
-        }
-    }
-    test2();
-
-    test3();
-
-    flo_UnitTest element;
-    FLO_FOR_EACH_MSI_UNIT_TEST(element, &failedTests) {
-        // klfgsdl
-        FLO_INFO(element.key, FLO_FLUSH | FLO_NEWLINE);
+        FLO_TEST_TOPIC(FLO_STRING("inside topic")) { multipleTests(); }
+        test3();
+        test4();
     }
 
     return flo_testSuiteFinish();
