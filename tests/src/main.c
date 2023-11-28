@@ -16,30 +16,23 @@ static flo_String testNames[] = {
 
 static ptrdiff_t numTestNames = FLO_COUNTOF(testNames);
 
-FLO_TEST_FUNCTION(test4, {
-    FLO_TEST_FAILURE {
-        // kdfjfkdj
-        FLO_ERROR("chaos and destruction\n");
-        FLO_ERROR("chaos and destruction\n");
-        FLO_ERROR("chaos and destruction\n");
-}
-});
-
 void test1() {
-    flo_unitTestStart(FLO_STRING("Test 1"));
-
-    flo_testSuccess();
+    FLO_TEST(FLO_STRING("Test 1")) {
+        //
+        flo_testSuccess();
+    }
 }
 
 void test2() {
-    flo_unitTestStart(FLO_STRING("Test 2"));
-
-    flo_testSuccess();
+    FLO_TEST(FLO_STRING("Test 2")) {
+        //
+        flo_testSuccess();
+    }
 }
 
-FLO_COMPOUND_TEST_FUNCTION(multipleTests, {
+void multipleTests() {
     for (ptrdiff_t i = 0; i < numTestNames; i++) {
-        FLO_PARAMETERIZED_TEST(testNames[i]) {
+        FLO_TEST(testNames[i]) {
             if (i % 2 == 0) {
                 flo_testSuccess();
             } else {
@@ -51,12 +44,17 @@ FLO_COMPOUND_TEST_FUNCTION(multipleTests, {
             }
         }
     }
-});
+}
 
 void test3() {
-    flo_unitTestStart(FLO_STRING("Test 3"));
-
-    flo_testSuccess();
+    FLO_TEST(FLO_STRING("Test 3")) {
+        //
+        FLO_TEST_FAILURE {
+            // Inside this scoped block you can do your
+            // additional logging.
+            FLO_ERROR("biger ddfd chaos\n");
+        }
+    }
 }
 
 int main() {
@@ -102,7 +100,6 @@ int main() {
         test2();
         FLO_TEST_TOPIC(FLO_STRING("inside topic")) { multipleTests(); }
         test3();
-        test4();
     }
 
     return flo_testSuiteFinish();

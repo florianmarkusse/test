@@ -86,31 +86,12 @@ void flo_testTopicFinish() {
     nextTestTopic--;
 }
 
-void flo_printTestStart(flo_String testName) {
+void flo_unitTestStart(flo_String testName) {
     FLO_FLUSH_AFTER(FLO_STDOUT) {
         appendSpaces();
         FLO_INFO((FLO_STRING("- ")));
         flo_appendToBufferMinSize(testName, 50, flo_getWriteBuffer(FLO_STDOUT),
                                   0);
-    }
-}
-
-void flo_unitTestStart(flo_String testName) { flo_printTestStart(testName); }
-
-void flo_compoundTestStart(flo_String testName) {
-    FLO_FLUSH_AFTER(FLO_STDOUT) {
-        appendSpaces();
-        FLO_INFO((FLO_STRING("+ ")));
-        flo_appendToBufferMinSize(testName, 50, flo_getWriteBuffer(FLO_STDOUT),
-                                  0);
-        FLO_INFO((FLO_STRING("\n")));
-    }
-}
-
-void flo_compoundTestFinish() {
-    FLO_FLUSH_AFTER(FLO_STDOUT) {
-        appendSpaces();
-        FLO_INFO((FLO_STRING("+\n")));
     }
 }
 
