@@ -3,7 +3,6 @@
 #include "hash/hashes.h"
 #include "memory/arena.h"
 #include "test.h"
-#include "unit-test.h"
 
 #define CAP 1 << 21
 
@@ -27,13 +26,13 @@ FLO_TEST_FUNCTION(test4, {
 });
 
 void test1() {
-    flo_unitTestStart(FLO_STRING("Test 1"), test1);
+    flo_unitTestStart(FLO_STRING("Test 1"));
 
     flo_testSuccess();
 }
 
 void test2() {
-    flo_unitTestStart(FLO_STRING("Test 2"), test2);
+    flo_unitTestStart(FLO_STRING("Test 2"));
 
     flo_testSuccess();
 }
@@ -55,7 +54,7 @@ FLO_COMPOUND_TEST_FUNCTION(multipleTests, {
 });
 
 void test3() {
-    flo_unitTestStart(FLO_STRING("Test 3"), test3);
+    flo_unitTestStart(FLO_STRING("Test 3"));
 
     flo_testSuccess();
 }
@@ -94,10 +93,6 @@ int main() {
         return -1;
     }
     arena.jmp_buf = jmp_buf;
-
-    flo_msi_UnitTest failedTests =
-        FLO_NEW_MSI_SET(flo_msi_UnitTest, 10, &arena);
-    flo_msi_setUnitTestsVariable(&failedTests);
 
     flo_testSuiteStart();
 

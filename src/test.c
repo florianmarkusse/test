@@ -1,6 +1,5 @@
 #include "test.h"
 #include "log.h"
-#include "unit-test.h"
 
 typedef struct {
     uint64_t successes;
@@ -9,9 +8,6 @@ typedef struct {
 } flo_TestTopic;
 
 #define MAX_TEST_TOPICS 1 << 6
-
-static flo_UnitTest currentUnitTest = {0};
-static flo_UnitTest currentCompoundTest = {0};
 
 static flo_TestTopic testTopics[MAX_TEST_TOPICS];
 static ptrdiff_t nextTestTopic = 0;
@@ -99,27 +95,9 @@ void flo_printTestStart(flo_String testName) {
     }
 }
 
-void flo_unitTestStart(flo_String testName, void (*testFunction)()) {
-    flo_setCurrentUnitTest(testName, testFunction);
+void flo_unitTestStart(flo_String testName) { flo_printTestStart(testName); }
 
-    flo_printTestStart(testName);
-}
-
-void flo_setCurrentUnitTest(flo_String testName, void (*testFunction)()) {
-    currentCompoundTest = (flo_UnitTest){0};
-    currentUnitTest = (flo_UnitTest){
-        .key = testName, .value = testFunction, .wasSuccess = true};
-}
-
-void flo_setCurrentCompoundTest(flo_String testName, void (*testFunction)()) {
-    currentUnitTest = (flo_UnitTest){0};
-    currentCompoundTest = (flo_UnitTest){
-        .key = testName, .value = testFunction, .wasSuccess = true};
-}
-
-void flo_compoundTestStart(flo_String testName, void (*testFunction)()) {
-    flo_setCurrentCompoundTest(testName, testFunction);
-
+void flo_compoundTestStart(flo_String testName) {
     FLO_FLUSH_AFTER(FLO_STDOUT) {
         appendSpaces();
         FLO_INFO((FLO_STRING("+ ")));
@@ -130,9 +108,6 @@ void flo_compoundTestStart(flo_String testName, void (*testFunction)()) {
 }
 
 void flo_compoundTestFinish() {
-    if (currentCompoundTest.key.len != 0) {
-        flo_msi_insertUnitTest(currentCompoundTest);
-    }
     FLO_FLUSH_AFTER(FLO_STDOUT) {
         appendSpaces();
         FLO_INFO((FLO_STRING("+\n")));
@@ -142,10 +117,6 @@ void flo_compoundTestFinish() {
 void flo_testSuccess() {
     for (ptrdiff_t i = 0; i < nextTestTopic; i++) {
         testTopics[i].successes++;
-    }
-
-    if (currentUnitTest.key.len != 0) {
-        flo_msi_insertUnitTest(currentUnitTest);
     }
 
     FLO_FLUSH_AFTER(FLO_STDOUT) {
@@ -160,15 +131,6 @@ void flo_testSuccess() {
 void flo_testFailure() {
     for (ptrdiff_t i = 0; i < nextTestTopic; i++) {
         testTopics[i].failures++;
-    }
-
-    if (currentUnitTest.key.len != 0) {
-        currentUnitTest.wasSuccess = false;
-        flo_msi_insertUnitTest(currentUnitTest);
-    } else {
-        if (currentCompoundTest.key.len != 0) {
-            currentCompoundTest.wasSuccess = false;
-        }
     }
 
     FLO_FLUSH_AFTER(FLO_STDERR) {

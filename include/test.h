@@ -20,13 +20,13 @@ extern "C" {
 
 #define FLO_TEST_FUNCTION(testName, ...)                                       \
     void testName() {                                                          \
-        flo_unitTestStart(FLO_STRING((#testName)), testName);                  \
+        flo_unitTestStart(FLO_STRING((#testName)));                            \
         __VA_ARGS__                                                            \
     }
 
 #define FLO_COMPOUND_TEST_FUNCTION(testName, ...)                              \
     void testName() {                                                          \
-        flo_compoundTestStart(FLO_STRING((#testName)), testName);              \
+        flo_compoundTestStart(FLO_STRING((#testName)));                        \
         __VA_ARGS__                                                            \
         flo_compoundTestFinish();                                              \
     }
@@ -50,11 +50,9 @@ void flo_testTopicFinish();
 
 void flo_printTestStart(flo_String testName);
 
-void flo_setCurrentUnitTest(flo_String testName, void (*testFunction)());
-void flo_unitTestStart(flo_String testName, void (*testFunction)());
+void flo_unitTestStart(flo_String testName);
 
-void flo_setCurrentCompoundTest(flo_String testName, void (*testFunction)());
-void flo_compoundTestStart(flo_String testName, void (*testFunction)());
+void flo_compoundTestStart(flo_String testName);
 void flo_compoundTestFinish();
 
 void flo_testSuccess();

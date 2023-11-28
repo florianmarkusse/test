@@ -31,7 +31,6 @@ endif()
 add_library(${FLO_TEST_LIBRARY} ${LIBRARY_TYPE}
     "src/test.c"
     "src/expectations.c"
-    "src/unit-test.c"
 )
 
 set(FLO_TEST_INCLUDES
